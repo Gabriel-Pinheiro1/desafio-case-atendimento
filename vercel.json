@@ -1,6 +1,13 @@
 {
   "builds": [
-    { "src": "app.py", "use": "@vercel/python", "config": { "includeFiles": ["dados/**", "static/**", "analise.py", "classificador.py"] } }
+    {
+      "src": "app.py",
+      "use": "@vercel/python",
+      "config": {
+        "includeFiles": ["dados/**", "static/**", "analise.py", "classificador.py", "agente.py"],
+        "functions": { "app.py": { "maxDuration": 60 } }
+      }
+    }
   ],
   "routes": [{ "src": "/(.*)", "dest": "app.py" }]
 }
