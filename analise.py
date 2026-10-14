@@ -920,16 +920,24 @@ def montar_resposta(d, peds, log, brutos, finais, P, data_ref, dias, fator, fato
             i["evidencia"] = (f"{_pct(r0.status_entrega.isin(['em_transito', 'atrasado']).sum(), len(r0))}% dos contatos de entrega são de pedidos em trânsito ou atrasados: "
                               f"a informação já estava no sistema. {_pct(r0.recontato.sum(), len(r0))}% deles são recontato.")
         if i["id"] == "autoatendimento":
-            i["evidencia"] = (f"{politica_extra['endereco_ja_saiu']} de {politica_extra['endereco_total']} pedidos de troca de endereço já tinham saído: "
-                              f"a resposta pode ser automática.")
+            e0 = d[d.categoria.eq("endereco")]
+            i["evidencia"] = (f"{_pct(e0.status_entrega.eq('em_separacao').sum(), len(e0))}% dos pedidos de troca de endereço estavam em separação (janela curta) e o agente "
+                              f"respondeu 'vou verificar'; {_pct(e0.status.isin(['pendente', 'reaberto']).sum(), len(e0))}% ficaram pendentes. "
+                              f"{int(d.categoria.isin(['duvida_produto', 'duvida_personalizacao']).sum())} dúvidas de produto têm resposta na ficha técnica.")
 
-    # ---------- evitáveis
-    evitavel_ids = {"rastreio", "atraso", "item_faltando", "brinde", "pagamento_pendente", "cupom_promocao", "cashback", "endereco",
-                    "duvida_produto", "duvida_personalizacao", "cancelamento", "personalizacao", "avaria"}
-    d["evitavel"] = d.categoria.isin(evitavel_ids) | d.recontato
+    # ---------- evitáveis, em dois níveis (não somar um no outro)
+    # (a) não deveria existir: a informação estava no sistema ou o cliente poderia resolver sozinho, ou é recontato
+    nao_existir_ids = {"rastreio", "pagamento_pendente", "cupom_promocao", "cashback", "endereco", "duvida_produto", "duvida_personalizacao"}
+    # (b) evitável na origem: existe porque uma operação falhou antes (entrega, expedição, produção, embalagem)
+    origem_ids = {"atraso", "item_faltando", "brinde", "avaria", "personalizacao"}
+    d["nao_deveria_existir"] = d.categoria.isin(nao_existir_ids) | d.recontato | (d.categoria.eq("cancelamento") & d.trecho.str.contains("duas vezes", case=False))
+    d["evitavel_origem"] = d.categoria.isin(origem_ids) & ~d.nao_deveria_existir
+    d["evitavel"] = d.nao_deveria_existir | d.evitavel_origem
     evitaveis = dict(
-        conversas=int(d.evitavel.sum()), pct=_pct(d.evitavel.sum(), n), custo_mes=_num(d.custo_mes[d.evitavel].sum()),
-        pct_custo=_pct(d.custo_mes[d.evitavel].sum(), custo_mes_total),
+        conversas=int(d.nao_deveria_existir.sum()), pct=_pct(d.nao_deveria_existir.sum(), n),
+        custo_mes=_num(d.custo_mes[d.nao_deveria_existir].sum()), pct_custo=_pct(d.custo_mes[d.nao_deveria_existir].sum(), custo_mes_total),
+        origem_conversas=int(d.evitavel_origem.sum()), origem_pct=_pct(d.evitavel_origem.sum(), n),
+        origem_custo_mes=_num(d.custo_mes[d.evitavel_origem].sum()),
         recontatos=int(d.recontato.sum()), custo_recontatos_mes=_num(d.custo_mes[d.recontato].sum()),
         ra_recontato=int(d.escalou_ra.sum()), ra_total=int(d.canal.eq("reclame_aqui").sum()),
         custo_ra_recontato_mes=_num(d.custo_mes[d.escalou_ra].sum()),
@@ -997,6 +1005,8 @@ def montar_resposta(d, peds, log, brutos, finais, P, data_ref, dias, fator, fato
         pct_evitavel=evitaveis["pct"], pct_automatico=_pct((d.automacao == "automatico").sum(), n),
         pct_sla_whatsapp=next((c["pct_sla_ok"] for c in canais if c["canal"] == "whatsapp"), None),
     )
+    for i in iniciativas:
+        i["evidencia"] = br(i["evidencia"])
     executivo["achados"] = gerar_achados(executivo, motivos, canais, transp, mudancas, produtos, politicas, politica_extra, evitaveis, concordancia, marcas, sla_wa, fator_mes, d)
 
     return dict(
@@ -1019,6 +1029,14 @@ def montar_resposta(d, peds, log, brutos, finais, P, data_ref, dias, fator, fato
     )
 
 
+_RE_DEC = re.compile(r"(\d)\.(\d{1,2})(?!\d)")
+
+
+def br(texto: str) -> str:
+    """Troca o ponto decimal por vírgula nas frases (não mexe no milhar 'R$ 13.579')."""
+    return _RE_DEC.sub(lambda m: m.group(1) + "," + m.group(2), texto)
+
+
 def _brl(v):
     s = f"{v:,.0f}".replace(",", "X").replace(".", ",").replace("X", ".")
     return f"R$ {s}"
@@ -1039,6 +1057,9 @@ def gerar_achados(ex, motivos, canais, transp, mudancas, produtos, politicas, pe
         a.append(dict(titulo=f"{t['transportadora']} concentra o problema",
                       texto=f"Tem {t['pct_pedidos']}% dos pedidos e {t['pct_contatos_entrega']}% dos contatos de entrega ({t['indice']}x o esperado), quase todos no Nordeste.",
                       nivel="alto"))
+    a.append(dict(titulo="Contatos que não deveriam existir",
+                  texto=f"{ev['pct']}% das conversas ({_brl(ev['custo_mes'])}/mês) pedem algo que o sistema já sabia ou repetem um contato não resolvido; outros {ev['origem_pct']}% só existem porque uma operação falhou antes.",
+                  nivel="alto"))
     ra = next((c for c in canais if c["canal"] == "reclame_aqui"), None)
     if ra:
         a.append(dict(titulo="Reclame Aqui pesa mais que o volume",
@@ -1068,4 +1089,6 @@ def gerar_achados(ex, motivos, canais, transp, mudancas, produtos, politicas, pe
         a.append(dict(titulo="Fora do horário, só o bot (que não resolve)",
                       texto=f"{sla_wa['pct_fora_horario']}% dos clientes do WhatsApp escrevem fora das 8h-20h e esperam em mediana {sla_wa['espera_mediana_fora_h']}h pela 1ª resposta.",
                       nivel="medio"))
+    for x in a:
+        x["texto"] = br(x["texto"])
     return a

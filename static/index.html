@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atendimento · por que nos procuram e o que fazer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --paper:#f3eee4; --card:#fbf8f2; --ink:#1c1b18; --ink2:#3a3730; --muted:#706a5e; --rule:#d8cfbf; --rule2:#e7e0d3;
+  --red:#cf3b24; --red-soft:#f6dcd4; --teal:#1d5c58; --teal-soft:#d6e6e2; --ochre:#b9800f; --ochre-soft:#f3e4c2; --blue:#2c4c7c;
+  --serif:"Fraunces", Georgia, serif; --sans:"Public Sans", system-ui, sans-serif; --mono:"IBM Plex Mono", ui-monospace, monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+body{background-image:radial-gradient(rgba(28,27,24,.035) 1px,transparent 1px);background-size:4px 4px}
+a{color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+header.mast{border-bottom:3px double var(--ink);padding:26px 0 0;background:linear-gradient(var(--paper),rgba(243,238,228,.92))}
+.kicker{font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.mast h1{font-family:var(--serif);font-weight:800;font-size:clamp(30px,4.2vw,52px);line-height:1.02;letter-spacing:-.02em;margin:8px 0 6px;max-width:980px}
+.mast h1 em{font-style:italic;font-weight:400;color:var(--red)}
+.mast .sub{color:var(--ink2);max-width:860px;margin:0 0 18px}
+.meta-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted);padding:10px 0;border-top:1px solid var(--rule)}
+.meta-row b{color:var(--ink)}
+.pill{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--ink);border-radius:99px;padding:2px 10px;font-size:11.5px}
+.pill.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--teal)}
+.pill.up::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--red)}
+nav.tabs{position:sticky;top:0;z-index:20;background:var(--ink);color:var(--paper)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto}
+nav.tabs button{all:unset;cursor:pointer;padding:13px 16px;font-size:13.5px;font-weight:600;letter-spacing:.01em;white-space:nowrap;border-bottom:3px solid transparent;color:#cfc7b8}
+nav.tabs button:hover{color:#fff}
+nav.tabs button.on{color:#fff;border-bottom-color:var(--red)}
+nav.tabs .n{font-family:var(--mono);font-size:11px;opacity:.6;margin-right:6px}
+main{padding:30px 0 80px}
+section.tab{display:none;animation:rise .45s ease both}
+section.tab.on{display:block}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+h2{font-family:var(--serif);font-weight:600;font-size:30px;letter-spacing:-.01em;margin:0 0 4px}
+h3{font-family:var(--serif);font-weight:600;font-size:20px;margin:0 0 10px}
+.lede{color:var(--ink2);max-width:880px;margin:0 0 22px}
+.grid{display:grid;gap:18px}
+.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}.g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.g-7-5{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}
+.card{min-width:0}
+@media(max-width:980px){.g2,.g3,.g4,.g-7-5{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:18px 20px;box-shadow:0 1px 0 rgba(0,0,0,.03)}
+.card.ink{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.kpi .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.card.ink .lbl{color:#b9b0a0}
+.kpi .val{font-family:var(--serif);font-weight:800;font-size:36px;line-height:1.05;letter-spacing:-.02em;margin:6px 0 2px}
+.kpi .val small{font-size:16px;font-weight:400;color:var(--muted)}
+.kpi .foot{font-size:12.5px;color:var(--muted)}
+.card.ink .foot{color:#cfc7b8}
+.hero{display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:18px;margin-bottom:22px}
+@media(max-width:980px){.hero{grid-template-columns:1fr 1fr}}
+.hero .kpi:first-child .val{font-size:46px;color:#fff}
+.achados{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin:6px 0 26px}
+.achado{background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--ochre);padding:14px 16px;border-radius:3px;animation:rise .5s ease both}
+.achado.critico{border-left-color:var(--red);background:linear-gradient(90deg,var(--red-soft),var(--card) 40%)}
+.achado.alto{border-left-color:var(--red)}
+.achado.medio{border-left-color:var(--ochre)}
+.achado h4{margin:0 0 4px;font-size:15px;font-weight:700}
+.achado p{margin:0;font-size:13.5px;color:var(--ink2)}
+.sec-title{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:30px 0 12px;border-bottom:1px solid var(--ink);padding-bottom:6px}
+.sec-title h3{margin:0}
+.sec-title .hint{font-size:12.5px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-family:var(--mono);font-weight:500;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 8px;border-bottom:1.5px solid var(--ink);white-space:nowrap}
+td{padding:8px 8px;border-bottom:1px solid var(--rule2);vertical-align:top}
+td.num,th.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr:hover td{background:rgba(207,59,36,.035)}
+.scroll{overflow:auto;max-height:560px}
+.bar{height:8px;background:var(--rule2);border-radius:2px;position:relative;min-width:60px}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--ink);border-radius:2px}
+.bar.red i{background:var(--red)}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:1px 7px;border-radius:2px;border:1px solid var(--rule);background:#fff;white-space:nowrap}
+.tag.P1,.tag.Crítico,.tag.nao_conforme,.tag.humano{background:var(--red);color:#fff;border-color:var(--red)}
+.tag.P2,.tag.Alto,.tag.atencao{background:var(--ochre-soft);border-color:var(--ochre);color:#6b4a06}
+.tag.P3,.tag.Médio{background:#ece7dc}
+.tag.conforme,.tag.automatico,.tag.Baixo{background:var(--teal-soft);border-color:var(--teal);color:var(--teal)}
+.tag.assistido{background:#e3e9f3;border-color:var(--blue);color:var(--blue)}
+.muted{color:var(--muted)}
+.small{font-size:12.5px}
+.trecho{font-size:12.5px;color:var(--ink2);max-width:520px}
+.ini{display:grid;grid-template-columns:64px 1fr 240px;gap:18px;padding:18px 0;border-bottom:1px solid var(--rule);animation:rise .5s ease both}
+@media(max-width:980px){.ini{grid-template-columns:48px 1fr}}
+.ini .ord{font-family:var(--serif);font-weight:800;font-size:44px;line-height:.9;color:var(--red)}
+.ini h4{margin:0 0 6px;font-size:17px}
+.ini .who{font-size:12.5px;color:var(--muted);margin-bottom:6px}
+.ini .ev{font-size:13px;color:var(--ink2);background:rgba(185,128,15,.08);border-left:2px solid var(--ochre);padding:6px 10px;margin:8px 0}
+.ini .money{text-align:right}
+.ini .money .v{font-family:var(--serif);font-weight:800;font-size:28px;line-height:1}
+.ini .money .s{font-size:12px;color:var(--muted)}
+.callout{border:1.5px solid var(--ink);padding:14px 16px;background:var(--card);border-radius:3px;font-size:13.5px}
+.callout b{font-weight:700}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px 16px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12.5px;color:var(--ink2)}
+label.f input,select{font-family:var(--mono);font-size:13.5px;padding:7px 9px;border:1px solid var(--rule);border-radius:3px;background:#fff;color:var(--ink)}
+label.f input:focus,select:focus,input.search:focus{outline:2px solid var(--red);outline-offset:-1px}
+.btn{all:unset;cursor:pointer;display:inline-flex;gap:8px;align-items:center;background:var(--ink);color:var(--paper);padding:9px 16px;border-radius:3px;font-weight:600;font-size:13.5px}
+.btn:hover{background:var(--red)}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink)}
+.btn.ghost:hover{background:var(--ink);color:var(--paper)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.drop{border:1.5px dashed var(--ink2);border-radius:4px;padding:14px;background:rgba(255,255,255,.5)}
+.drop input{font-size:13px;margin-top:6px}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 12px}
+input.search{font-size:13.5px;padding:7px 10px;border:1px solid var(--rule);border-radius:3px;min-width:240px;background:#fff}
+#overlay{position:fixed;inset:0;background:rgba(243,238,228,.75);display:none;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(2px)}
+#overlay.on{display:flex}
+#overlay .box{font-family:var(--serif);font-size:22px;border:2px solid var(--ink);background:var(--card);padding:20px 28px}
+#overlay .box::after{content:"";display:block;height:3px;margin-top:10px;background:linear-gradient(90deg,var(--red) 0 30%,transparent 30%);background-size:200% 100%;animation:load 1s linear infinite}
+@keyframes load{from{background-position:100% 0}to{background-position:-100% 0}}
+#erro{display:none;background:var(--red);color:#fff;padding:10px 16px;margin:0 0 16px;border-radius:3px}
+.chart-box{position:relative;height:340px}
+.chart-box.tall{height:460px}
+.heat td.num{font-size:12px}
+.legend-note{font-size:12px;color:var(--muted);margin-top:8px}
+.two-col-list{columns:2;column-gap:28px;font-size:13.5px}
+@media(max-width:980px){.two-col-list{columns:1}}
+.pager{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px}
+footer{border-top:3px double var(--ink);padding:18px 0 40px;font-size:12.5px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="mast">
+  <div class="wrap">
+    <div class="kicker">Gocase + GoBeauté · Atendimento · Desafio AI-First, problema 1</div>
+    <h1>Por que os clientes nos procuram, <em>quanto isso custa</em> e o que fazer primeiro.</h1>
+    <p class="sub">Classificação de cada conversa pelo texto (não pela tag do agente), custo por canal extrapolado para o total,
+      aderência às políticas e uma fila do que precisa de uma pessoa agora. Tudo recalcula com novos CSVs e parâmetros.</p>
+    <div class="meta-row" id="meta"></div>
+  </div>
+</header>
+<nav class="tabs"><div class="wrap" id="tabs"></div></nav>
+<main><div class="wrap">
+  <div id="erro"></div>
+
+  <!-- 1 -->
+  <section class="tab" id="t-exec">
+    <div class="hero" id="hero"></div>
+    <div class="sec-title"><h3>O que os números dizem</h3><span class="hint">Frases geradas a partir dos dados: mudam com o upload e os parâmetros</span></div>
+    <div class="achados" id="achados"></div>
+    <div class="grid g-7-5">
+      <div class="card"><h3>Peso de cada motivo: R$/mês × conversas/mês</h3><div class="chart-box tall"><canvas id="ch-motivos"></canvas></div>
+        <div class="legend-note">Valores extrapolados para o total (amostra × fator) e convertidos para 30 dias. Conversas em que o cliente não escreveu ficam com custo zero por padrão.</div></div>
+      <div class="grid">
+        <div class="card"><h3>Volume vs. custo por canal</h3><div class="chart-box" style="height:250px"><canvas id="ch-canal"></canvas></div></div>
+        <div class="card" id="marcas-box"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section class="tab" id="t-motivos">
+    <h2>Motivos de contato</h2>
+    <p class="lede">Cada conversa é classificada pelas mensagens do cliente com regras e palavras-chave (sem IA externa), com tratamento de negação, ironia,
+      mais de um assunto por mensagem e remoção dos nomes de produto. A coluna "concordância" compara com a tag que o agente escolheu.</p>
+    <div class="card scroll" style="max-height:none"><table id="tb-motivos"></table></div>
+    <div class="sec-title"><h3>Mudança ao longo do tempo</h3><span class="hint">Conversas por semana na amostra · clique na legenda para ligar/desligar</span></div>
+    <div class="card"><div class="chart-box tall"><canvas id="ch-semanas"></canvas></div><div id="mudancas" class="legend-note"></div></div>
+    <div class="sec-title"><h3>Onde se concentra</h3><span class="hint">Índice = participação nos contatos ÷ participação nos pedidos (1,0 = o esperado)</span></div>
+    <div class="grid g2">
+      <div class="card"><h3>Transportadoras: contatos de entrega</h3><table id="tb-transp"></table></div>
+      <div class="card"><h3>Transportadora × UF (contatos de entrega)</h3><div class="scroll"><table id="tb-heat" class="heat"></table></div></div>
+    </div>
+    <div class="grid g3" style="margin-top:18px" id="produtos"></div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h3>Por marca</h3><table id="tb-marca"></table></div>
+      <div class="card"><h3>Hora em que o cliente escreve</h3><div class="chart-box" style="height:260px"><canvas id="ch-hora"></canvas></div>
+        <div class="legend-note">Faixa das 8h às 20h = horário dos agentes. Fora dela, só o bot responde.</div></div>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="tab" id="t-tags">
+    <h2>Nossa classificação × tag do agente</h2>
+    <p class="lede">A tag é preenchida à mão ao encerrar. Medimos se ela bate com o conteúdo. "Flexível" aceita tags vizinhas (ex.: Rastreio para um atraso);
+      "estrita" exige a tag esperada. Conversas sem mensagem do cliente ficam de fora.</p>
+    <div class="grid g4" id="conc-kpis"></div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card"><h3>Confiabilidade de cada tag</h3><div class="scroll"><table id="tb-portag"></table></div></div>
+      <div class="card"><h3>Exemplos de discordância</h3><div class="scroll"><table id="tb-exemplos"></table></div></div>
+    </div>
+    <div class="sec-title"><h3>Matriz completa</h3><span class="hint">Linhas: nossa classificação · colunas: tag do agente</span></div>
+    <div class="card scroll"><table id="tb-matriz" class="heat"></table></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="tab" id="t-atacar">
+    <h2>O que atacar primeiro</h2>
+    <p class="lede" id="criterio"></p>
+    <div class="grid g4" id="evit-kpis"></div>
+    <div class="sec-title"><h3>Mudanças de processo e produto (atacam a causa)</h3><span class="hint">Cada conversa entra em uma só iniciativa: os ganhos não se sobrepõem</span></div>
+    <div id="iniciativas"></div>
+    <div class="sec-title"><h3>Os agentes seguem as políticas?</h3><span class="hint">Conferido no texto das respostas, contra parametros.md</span></div>
+    <div class="card"><table id="tb-politicas"></table><div id="pol-extra" class="legend-note"></div></div>
+    <div class="sec-title"><h3>Tratativa caso a caso (corrige o cliente de hoje)</h3><span class="hint">Detalhe na aba "Sistema × pessoa"</span></div>
+    <div class="card" id="caso-a-caso"></div>
+  </section>
+
+  <!-- 5 -->
+  <section class="tab" id="t-auto">
+    <h2>O que o sistema faz sozinho e o que precisa de uma pessoa</h2>
+    <p class="lede">Regra geral por motivo, com travas que sempre mandam para um humano: sinal de saúde, Reclame Aqui (resposta pública), texto tentando dar ordens ao sistema e cliente irritado no 3º contato.
+      Nenhuma ação automática mexe em dinheiro (estorno, reembolso) sem aprovação humana.</p>
+    <div class="grid g3" id="auto-kpis"></div>
+    <div class="sec-title"><h3>Fila de ação humana urgente</h3><span class="hint" id="fila-hint"></span></div>
+    <div class="toolbar">
+      <select id="f-prio"><option value="">Todas as prioridades</option><option>P1</option><option>P2</option><option>P3</option></select>
+      <select id="f-motivo"><option value="">Todos os motivos</option></select>
+      <input class="search" id="f-busca" placeholder="Buscar por ID, pedido, marca, texto…">
+      <button class="btn ghost" id="exp-fila">Exportar fila (CSV)</button>
+    </div>
+    <div class="card scroll"><table id="tb-fila"></table></div>
+    <div class="sec-title"><h3>Matriz de automação por motivo</h3></div>
+    <div class="card"><table id="tb-automatriz"></table></div>
+  </section>
+
+  <!-- 6 -->
+  <section class="tab" id="t-param">
+    <h2>Parâmetros e novos dados</h2>
+    <p class="lede">Altere os parâmetros de negócio ou suba três CSVs no mesmo formato e tudo é recalculado. O servidor não guarda nada:
+      os arquivos ficam no seu navegador e são reenviados a cada recálculo.</p>
+    <div class="grid g2">
+      <div class="card">
+        <h3>Novos dados</h3>
+        <div class="grid">
+          <div class="drop"><b>conversas.csv</b><br><input type="file" id="up-conversas" accept=".csv,text/csv"></div>
+          <div class="drop"><b>mensagens.csv</b><br><input type="file" id="up-mensagens" accept=".csv,text/csv"></div>
+          <div class="drop"><b>pedidos.csv</b><br><input type="file" id="up-pedidos" accept=".csv,text/csv"></div>
+        </div>
+        <div class="toolbar" style="margin-top:14px">
+          <button class="btn" id="btn-upload">Analisar estes arquivos</button>
+          <button class="btn ghost" id="btn-original">Voltar aos dados originais</button>
+        </div>
+        <div class="small muted" id="up-status"></div>
+        <p class="small muted">Aceita separador vírgula ou ponto e vírgula e encoding UTF-8 ou Latin-1. Colunas obrigatórias: conversas (conversation_id, canal, data_abertura), mensagens (conversation_id, autor, timestamp, texto), pedidos (order_id).</p>
+      </div>
+      <div class="card">
+        <h3>Parâmetros de negócio</h3>
+        <div class="form-grid" id="form-negocio"></div>
+        <h3 style="margin-top:18px">Premissas de ganho <span class="small muted">(% dos contatos que cada ação elimina)</span></h3>
+        <div class="form-grid" id="form-taxas"></div>
+        <h3 style="margin-top:18px">Automação <span class="small muted">(% do custo economizado)</span></h3>
+        <div class="form-grid" id="form-auto"></div>
+        <div class="toolbar" style="margin-top:14px">
+          <button class="btn" id="btn-recalc">Recalcular</button>
+          <button class="btn ghost" id="btn-reset">Restaurar padrão</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="tab" id="t-qual">
+    <h2>Qualidade dos dados</h2>
+    <p class="lede">O que foi limpo, o que foi apenas sinalizado e por quê. Linhas com zero ficam visíveis de propósito: mostram que a verificação rodou.
+      O texto do cliente é tratado como entrada não confiável: dados pessoais são mascarados e instruções embutidas no texto nunca são executadas.</p>
+    <div class="grid g4" id="qual-kpis"></div>
+    <div class="card" style="margin-top:18px"><table id="tb-qual"></table></div>
+  </section>
+
+  <!-- 8 -->
+  <section class="tab" id="t-conv">
+    <h2>Conversas classificadas</h2>
+    <p class="lede">Uma linha por conversa, com a categoria atribuída, a regra que decidiu, a tag do agente, SLA e política. Texto com dados pessoais mascarados.</p>
+    <div class="toolbar">
+      <select id="c-cat"><option value="">Todas as categorias</option></select>
+      <select id="c-canal"><option value="">Todos os canais</option><option value="whatsapp">WhatsApp</option><option value="email">E-mail</option><option value="reclame_aqui">Reclame Aqui</option></select>
+      <select id="c-conc"><option value="">Concordância: todas</option><option value="false">Só discordantes</option><option value="true">Só concordantes</option></select>
+      <input class="search" id="c-busca" placeholder="Buscar…">
+      <button class="btn" id="exp-conv">Exportar CSV (filtro atual)</button>
+    </div>
+    <div class="card scroll" style="max-height:640px"><table id="tb-conv"></table></div>
+    <div class="pager" id="pager"></div>
+  </section>
+</div></main>
+<footer><div class="wrap">Dados sintéticos do desafio. Classificação 100% por regras, sem envio de texto a serviços externos. Código: analise.py e classificador.py.</div></footer>
+<div id="overlay"><div class="box">Recalculando…</div></div>
+
+<script>
+"use strict";
+const TABS=[["exec","Visão executiva"],["motivos","Motivos"],["tags","Classificação × tag"],["atacar","O que atacar"],["auto","Sistema × pessoa"],["param","Parâmetros e upload"],["qual","Qualidade dos dados"],["conv","Conversas"]];
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nf0=new Intl.NumberFormat("pt-BR",{maximumFractionDigits:0}), nf1=new Intl.NumberFormat("pt-BR",{maximumFractionDigits:1,minimumFractionDigits:1});
+const brl=v=>v==null?"–":"R$ "+nf0.format(v);
+const n0=v=>v==null?"–":nf0.format(v);
+const pct=v=>v==null?"–":nf1.format(v)+"%";
+const NIVEL={automatico:"Automático",assistido:"Assistido",humano:"Humano"};
+const CANAL={whatsapp:"WhatsApp",email:"E-mail",reclame_aqui:"Reclame Aqui"};
+let DATA=null, PARAMS=null, DEFAULTS=null, FILES=null, charts={};
+
+Chart.defaults.font.family='"Public Sans", system-ui, sans-serif'; Chart.defaults.color="#3a3730"; Chart.defaults.borderColor="#e7e0d3";
+const PAL=["#1c1b18","#cf3b24","#1d5c58","#b9800f","#2c4c7c","#8a5a83","#6f8f3a","#a0522d","#4f7a9a","#c76d8e","#5d5d5d","#d9a441"];
+
+function tabs(){
+  $("#tabs").innerHTML=TABS.map(([id,l],i)=>`<button data-t="${id}"><span class="n">0${i+1}</span>${esc(l)}</button>`).join("");
+  $("#tabs").addEventListener("click",e=>{const b=e.target.closest("button");if(b)show(b.dataset.t)});
+  show((location.hash||"#exec").slice(1));
+}
+function show(id){
+  if(!TABS.find(t=>t[0]===id))id="exec";
+  document.querySelectorAll("section.tab").forEach(s=>s.classList.toggle("on",s.id==="t-"+id));
+  document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("on",b.dataset.t===id));
+  history.replaceState(null,"","#"+id);
+}
+function erro(msg){const e=$("#erro");e.textContent=msg||"";e.style.display=msg?"block":"none"}
+function loading(on){$("#overlay").classList.toggle("on",on)}
+
+async function carregar(){
+  loading(true); erro("");
+  try{
+    let r;
+    const usarPost=FILES||JSON.stringify(PARAMS)!==JSON.stringify(DEFAULTS);
+    if(usarPost){
+      const fd=new FormData();
+      if(FILES){fd.append("conversas",FILES.conversas);fd.append("mensagens",FILES.mensagens);fd.append("pedidos",FILES.pedidos)}
+      fd.append("params",JSON.stringify(PARAMS));
+      r=await fetch("/api/analise",{method:"POST",body:fd});
+    }else r=await fetch("/api/analise");
+    if(!r.ok){let t=await r.text();try{t=JSON.parse(t).detail}catch(_){}throw new Error(t)}
+    DATA=await r.json(); render();
+  }catch(e){erro("Não foi possível calcular: "+e.message)}
+  finally{loading(false)}
+}
+
+function chart(id,cfg){if(charts[id])charts[id].destroy();charts[id]=new Chart(document.getElementById(id),cfg)}
+function bar(v,max,cls=""){const w=max?Math.max(2,100*v/max):0;return `<div class="bar ${cls}"><i style="width:${w}%"></i></div>`}
+
+function render(){
+  const D=DATA,E=D.executivo,M=D.meta;
+  $("#meta").innerHTML=`<span class="pill ${M.origem.startsWith("upload")?"up":"live"}">${esc(M.origem)}</span>
+   <span>Período <b>${esc(M.periodo)}</b> (${n0(M.dias)} dias)</span><span>Amostra <b>${n0(E.conversas_amostra)}</b> conversas × fator <b>${esc(M.fator_amostra)}</b></span>
+   <span>Referência para idade e SLA: <b>${esc(M.data_referencia)}</b></span><span>Calculado em ${esc(M.gerado_em)}</span>`;
+  renderExec(D);renderMotivos(D);renderTags(D);renderAtacar(D);renderAuto(D);renderQual(D);renderConv(D);renderForm();
+}
+
+function renderExec(D){
+  const E=D.executivo;
+  $("#hero").innerHTML=`
+   <div class="card ink kpi"><div class="lbl">Custo do atendimento, total extrapolado</div><div class="val">${brl(E.custo_mes)}<small style="color:#b9b0a0"> /mês</small></div>
+     <div class="foot">${brl(E.custo_ano)} por ano · ${n0(E.conversas_mes)} conversas/mês · ${brl(E.custo_medio)} por conversa com mensagem</div></div>
+   <div class="card kpi"><div class="lbl">Ganho estimado das ações</div><div class="val" style="color:var(--teal)">${brl(E.ganho_mes)}<small>/mês</small></div><div class="foot">${brl(E.ganho_ano)}/ano com as premissas editáveis</div></div>
+   <div class="card kpi"><div class="lbl">Reclame Aqui</div><div class="val">${pct(E.pct_ra_custo)}<small> do custo</small></div><div class="foot">com só ${pct(E.pct_ra_volume)} do volume</div></div>
+   <div class="card kpi"><div class="lbl">Precisa de uma pessoa agora</div><div class="val" style="color:var(--red)">${n0(E.fila_urgente)}</div><div class="foot">${n0(E.fila_p1)} de prioridade 1 (saúde, segurança, dinheiro)</div></div>`;
+  $("#achados").innerHTML=E.achados.map((a,i)=>`<div class="achado ${esc(a.nivel)}" style="animation-delay:${i*45}ms"><h4>${esc(a.titulo)}</h4><p>${esc(a.texto)}</p></div>`).join("");
+  const mot=D.motivos.filter(m=>m.categoria!=="sem_mensagem").slice(0,14);
+  chart("ch-motivos",{type:"bar",data:{labels:mot.map(m=>m.nome),datasets:[
+     {label:"R$/mês",data:mot.map(m=>m.custo_mes),backgroundColor:"#1c1b18",xAxisID:"x"},
+     {label:"conversas/mês",data:mot.map(m=>m.conversas_mes),backgroundColor:"rgba(207,59,36,.55)",xAxisID:"x2"}]},
+    options:{indexAxis:"y",maintainAspectRatio:false,plugins:{legend:{position:"top",align:"start"},tooltip:{callbacks:{label:c=>c.dataset.label==="R$/mês"?brl(c.raw):n0(c.raw)+" conversas/mês"}}},
+     scales:{x:{position:"top",ticks:{maxRotation:0,maxTicksLimit:6,callback:v=>"R$ "+nf0.format(v)}},x2:{position:"bottom",grid:{display:false},ticks:{color:"#cf3b24"}},y:{ticks:{autoSkip:false,font:{size:11.5}}}}}});
+  chart("ch-canal",{type:"bar",data:{labels:D.canais.map(c=>c.nome),datasets:[
+     {label:"% do volume",data:D.canais.map(c=>c.pct_volume),backgroundColor:"#d8cfbf"},{label:"% do custo",data:D.canais.map(c=>c.pct_custo),backgroundColor:"#cf3b24"}]},
+    options:{maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:c=>c.dataset.label+": "+pct(c.raw)}}},scales:{y:{ticks:{callback:v=>v+"%"}}}}});
+  const mk=D.concentracoes.marcas;
+  $("#marcas-box").innerHTML=`<h3>Contatos por 100 pedidos</h3><table><tr><th>Grupo</th><th class="num">Pedidos/período</th><th class="num">Conversas/período</th><th class="num">por 100 pedidos</th><th class="num">R$ por pedido</th></tr>
+   ${mk.map(m=>`<tr><td>${esc(m.grupo)}</td><td class="num">${n0(m.pedidos_periodo)}</td><td class="num">${n0(m.conversas_periodo)}</td><td class="num"><b>${m.contatos_por_100_pedidos==null?"–":nf1.format(m.contatos_por_100_pedidos)}</b></td><td class="num">${m.custo_por_pedido==null?"–":"R$ "+m.custo_por_pedido.toFixed(2).replace(".",",")}</td></tr>`).join("")}</table>
+   <div class="legend-note">Pedidos faturados no período vêm de parametros.md (editáveis).</div>`;
+}
+
+function renderMotivos(D){
+  const mx=Math.max(...D.motivos.map(m=>m.custo_mes||0));
+  $("#tb-motivos").innerHTML=`<tr><th>Motivo</th><th>Grupo</th><th class="num">Amostra</th><th class="num">Conv./mês</th><th class="num">R$/mês</th><th></th><th class="num">% custo</th><th class="num">% no RA</th><th class="num">% recontato</th><th class="num">% em aberto</th><th class="num">Concordância</th><th>Tags que o agente usou</th></tr>`+
+   D.motivos.map(m=>`<tr><td><b>${esc(m.nome)}</b></td><td class="muted small">${esc(m.grupo)}</td><td class="num">${n0(m.conversas)}</td><td class="num">${n0(m.conversas_mes)}</td><td class="num"><b>${brl(m.custo_mes)}</b></td><td style="width:90px">${bar(m.custo_mes,mx,"red")}</td><td class="num">${pct(m.pct_custo)}</td><td class="num">${pct(m.pct_reclame_aqui)}</td><td class="num">${pct(m.pct_recontato)}</td><td class="num">${pct(m.pct_aberto)}</td><td class="num">${pct(m.concordancia)}</td>
+   <td class="small muted">${Object.entries(m.tags_do_agente).map(([t,v])=>`${esc(t)} ${v}`).join(" · ")}</td></tr>`).join("");
+  const S=D.semanas, foco=new Set((D.concentracoes.mudancas||[]).slice(0,5).map(m=>m.categoria));
+  const cats=Object.keys(S.series).filter(c=>c!=="sem_mensagem").sort((a,b)=>S.series[b].reduce((x,y)=>x+y,0)-S.series[a].reduce((x,y)=>x+y,0));
+  chart("ch-semanas",{type:"line",data:{labels:S.rotulos,datasets:cats.map((c,i)=>({label:S.nomes[c],data:S.series[c],borderColor:PAL[i%PAL.length],backgroundColor:PAL[i%PAL.length],tension:.25,borderWidth:foco.has(c)?3:1.2,pointRadius:foco.has(c)?2.5:0,hidden:!(foco.has(c)||i<2)}))},
+    options:{maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11}}}},scales:{x:{title:{display:true,text:"semana iniciada em"}}}}});
+  const mu=(D.concentracoes.mudancas||[]).filter(m=>Math.abs(m.variacao||0)>=40).slice(0,6);
+  $("#mudancas").innerHTML=mu.length?"<b>Maiores mudanças</b> (média das 4 primeiras vs. 4 últimas semanas completas): "+mu.map(m=>`${esc(m.nome)} ${m.antes}→${m.depois}/sem (${m.variacao>0?"+":""}${nf0.format(m.variacao)}%${m.desde?", desde "+esc(m.desde):""})`).join(" · "):"";
+  const T=D.concentracoes.transportadoras;
+  $("#tb-transp").innerHTML=`<tr><th>Transportadora</th><th class="num">% pedidos</th><th class="num">% contatos</th><th class="num">Índice</th><th class="num">% ainda em trânsito</th><th class="num">R$/mês</th></tr>`+
+    T.map(t=>`<tr><td><b>${esc(t.transportadora)}</b></td><td class="num">${pct(t.pct_pedidos)}</td><td class="num">${pct(t.pct_contatos_entrega)}</td><td class="num" style="color:${t.indice>1.2?"var(--red)":"inherit"}"><b>${t.indice}x</b></td><td class="num">${pct(t.pct_em_transito)}</td><td class="num">${brl(t.custo_mes)}</td></tr>`).join("");
+  const H=D.concentracoes.heatmap; if(H&&H.linhas){const mxh=Math.max(1,...H.valores.flat());
+    $("#tb-heat").innerHTML=`<tr><th></th>${H.colunas.map(c=>`<th class="num">${esc(c)}</th>`).join("")}</tr>`+H.linhas.map((l,i)=>`<tr><td><b>${esc(l)}</b></td>${H.valores[i].map(v=>`<td class="num" style="background:rgba(207,59,36,${(v/mxh*.85).toFixed(2)});color:${v/mxh>.5?"#fff":"inherit"}">${v}</td>`).join("")}</tr>`).join("")}
+  const P=D.concentracoes.produtos, titulos={avaria:"Avaria / vazamento por produto",personalizacao:"Erro de personalização por produto",reacao_adversa:"Reação adversa por produto",insatisfacao:"Não gostou (fragrância) por produto",item_faltando:"Item faltando por produto",brinde:"Brinde faltando por produto"};
+  $("#produtos").innerHTML=Object.entries(P).filter(([k,v])=>v.length).map(([k,v])=>`<div class="card"><h3>${esc(titulos[k]||k)}</h3><table><tr><th>Produto</th><th class="num">Conv.</th><th class="num">% cat.</th></tr>${v.map(p=>`<tr><td class="small">${esc(p.produto)} <span class="muted">· ${esc(p.marca)}</span></td><td class="num">${p.contatos}</td><td class="num">${pct(p.pct_da_categoria)}</td></tr>`).join("")}</table></div>`).join("");
+  $("#tb-marca").innerHTML=`<tr><th>Marca</th><th class="num">Conversas</th><th class="num">R$/mês</th><th>Motivo nº 1</th><th class="num">% no RA</th></tr>`+D.concentracoes.por_marca.map(m=>`<tr><td><b>${esc(m.marca)}</b></td><td class="num">${n0(m.conversas)}</td><td class="num">${brl(m.custo_mes)}</td><td class="small">${esc(m.motivo_1)} <span class="muted">(${pct(m.pct_motivo_1)})</span></td><td class="num">${pct(m.pct_ra)}</td></tr>`).join("");
+  const hora=D.concentracoes.hora, h0=D.parametros.hora_abertura, h1=D.parametros.hora_fechamento;
+  chart("ch-hora",{type:"bar",data:{labels:hora.map((_,i)=>i+"h"),datasets:[{label:"1ª mensagem do cliente",data:hora,backgroundColor:hora.map((_,i)=>i>=h0&&i<h1?"#1c1b18":"#cf3b24")}]},options:{maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+}
+
+function renderTags(D){
+  const C=D.concordancia;
+  $("#conc-kpis").innerHTML=`<div class="card kpi"><div class="lbl">Concordância flexível</div><div class="val">${pct(C.flexivel)}</div><div class="foot">${n0(C.avaliadas)} conversas avaliadas</div></div>
+   <div class="card kpi"><div class="lbl">Concordância estrita</div><div class="val">${pct(C.estrita)}</div><div class="foot">só a tag esperada</div></div>
+   <div class="card kpi"><div class="lbl">Tag em conversa vazia</div><div class="val">${n0(C.tag_em_conversa_vazia)}</div><div class="foot">o cliente nem escreveu e a conversa ganhou tag</div></div>
+   <div class="card kpi"><div class="lbl">Mensagens com 2+ assuntos</div><div class="val">${n0(C.multiassunto)}</div><div class="foot">uma tag só não descreve o contato</div></div>`;
+  $("#tb-portag").innerHTML=`<tr><th>Tag do agente</th><th class="num">Conversas</th><th class="num">Bate com o texto</th><th>O que é na maioria das vezes</th></tr>`+C.por_tag.map(t=>`<tr><td><b>${esc(t.tag)}</b></td><td class="num">${n0(t.conversas)}</td><td class="num">${pct(t.pct_concorda)}</td><td class="small">${esc(t.principal_real)} <span class="muted">(${pct(t.pct_principal)})</span></td></tr>`).join("");
+  $("#tb-exemplos").innerHTML=`<tr><th>Tag do agente</th><th>Nossa classificação</th><th>Mensagem do cliente (mascarada)</th></tr>`+C.exemplos.map(x=>`<tr><td><span class="tag">${esc(x.tag)}</span></td><td class="small"><b>${esc(x.nossa)}</b></td><td class="trecho">${esc(x.trecho)}</td></tr>`).join("");
+  const M=C.matriz, mx=Math.max(1,...M.valores.flat());
+  $("#tb-matriz").innerHTML=`<tr><th></th>${M.colunas.map(c=>`<th class="num">${esc(c)}</th>`).join("")}</tr>`+M.linhas.map((l,i)=>`<tr><td class="small"><b>${esc(l)}</b></td>${M.valores[i].map(v=>`<td class="num" style="background:rgba(29,92,88,${(Math.sqrt(v/mx)*.8).toFixed(2)});color:${v/mx>.3?"#fff":"inherit"}">${v||""}</td>`).join("")}</tr>`).join("");
+}
+
+function renderAtacar(D){
+  const EV=D.evitaveis;
+  $("#criterio").innerHTML=`<b>Critério de prioridade:</b> primeiro o que é risco crítico à saúde ou à lei, independente do valor. Depois, ganho anual estimado ÷ esforço (1 a 3), com peso extra para risco alto
+   (Reclame Aqui, dinheiro do cliente). O ganho = custo atual das conversas que a ação atinge × % que ela elimina (premissa editável na aba Parâmetros). O ganho do "primeiro contato" incide só sobre o que sobra depois das outras ações.`;
+  $("#evit-kpis").innerHTML=`<div class="card kpi"><div class="lbl">Contatos que não deveriam existir</div><div class="val">${pct(EV.pct)}</div><div class="foot">${n0(EV.conversas)} na amostra · ${brl(EV.custo_mes)}/mês (${pct(EV.pct_custo)} do custo). A resposta já estava no sistema (rastreio, pagamento, cupom, endereço, ficha do produto), compra duplicada, ou é recontato de algo não resolvido.</div></div>
+   <div class="card kpi"><div class="lbl">Evitáveis na origem</div><div class="val">${pct(EV.origem_pct)}</div><div class="foot">mais ${n0(EV.origem_conversas)} conversas · ${brl(EV.origem_custo_mes)}/mês. O contato é legítimo, mas só existe porque algo falhou antes: atraso, item ou brinde faltando, avaria, erro de personalização.</div></div>
+   <div class="card kpi"><div class="lbl">Recontatos do mesmo pedido</div><div class="val">${n0(EV.recontatos)}</div><div class="foot">${brl(EV.custo_recontatos_mes)}/mês · ${n0(EV.ra_recontato)} de ${n0(EV.ra_total)} casos no RA já tinham procurado antes</div></div>
+   <div class="card ink kpi"><div class="lbl">Ganho estimado, somado</div><div class="val">${brl(EV.ganho_estimado_mes)}<small style="color:#b9b0a0">/mês</small></div><div class="foot">${brl(EV.ganho_estimado_ano)}/ano · sem dupla contagem</div></div>`;
+  $("#iniciativas").innerHTML=D.iniciativas.map((i,k)=>`<div class="ini" style="animation-delay:${k*40}ms"><div class="ord">${i.ordem}</div>
+    <div><h4>${esc(i.titulo)} <span class="tag ${esc(i.risco)}">risco ${esc(i.risco.toLowerCase())}</span> <span class="tag">${esc(i.tipo)}</span></h4>
+     <div class="who"><b>Dono:</b> ${esc(i.dono)} · esforço ${"●".repeat(i.esforco)}${"○".repeat(3-i.esforco)} · atinge ${n0(i.conversas_mes)} conversas/mês (${brl(i.custo_atual_mes)}/mês hoje${i.pct_ra?`, ${pct(i.pct_ra)} no RA`:""})</div>
+     ${i.evidencia?`<div class="ev">${esc(i.evidencia)}</div>`:""}<div class="small">${esc(i.acao)}</div></div>
+    <div class="money">${i.risco==="Crítico"&&!i.ganho_mes?`<div class="v" style="color:var(--red)">Obrigatório</div><div class="s">risco sanitário e legal; ganho não é medido em R$</div>`:
+      `<div class="v">${brl(i.ganho_mes)}<span class="small muted">/mês</span></div><div class="s">${brl(i.ganho_ano)}/ano · ~${n0(i.contatos_evitados_mes)} contatos/mês a menos<br>premissa: elimina ${nf0.format(i.taxa*100)}%</div>`}</div></div>`).join("");
+  const PL=D.politicas;
+  $("#tb-politicas").innerHTML=`<tr><th>Situação</th><th class="num">Casos</th><th class="num">Conformes</th><th class="num">Não conformes</th><th class="num">Atenção</th><th>Principal desvio</th></tr>`+PL.itens.map(p=>`<tr><td><b>${esc(p.nome)}</b></td><td class="num">${n0(p.casos)}</td><td class="num">${n0(p.conformes)}</td><td class="num" style="color:${p.nao_conformes?"var(--red)":"inherit"}"><b>${n0(p.nao_conformes)}</b></td><td class="num">${n0(p.atencao)}</td><td class="small">${esc(p.principal_desvio)}</td></tr>`).join("");
+  const X=PL.extra;
+  $("#pol-extra").innerHTML=`Promessas de "retorno em até 48h": ${n0(X.promessas)}, das quais ${n0(X.promessas_quebradas)} terminaram com o cliente voltando. Conversas "resolvidas": ${n0(X.resolvido)}, das quais ${n0(X.resolvido_sem_resolver)} voltaram depois pelo mesmo pedido.
+   Reação adversa: ${n0(X.saude_total)} casos, ${n0(X.saude_com_registro)} com registro; tags usadas: ${Object.entries(X.saude_tags).map(([k,v])=>esc(k)+" "+v).join(", ")}.`;
+  const R=D.fila.resumo;
+  $("#caso-a-caso").innerHTML=`<div class="two-col-list">${Object.entries(R).map(([k,v])=>`<div><b>${esc(k)}</b>: ${n0(v)} casos</div>`).join("")}</div>
+   <p class="small muted" style="margin-bottom:0">Tratativa caso a caso resolve o cliente que já está esperando; não reduz o volume do mês seguinte. As iniciativas acima atacam a causa.</p>`;
+}
+
+function filaFiltrada(){
+  const p=$("#f-prio").value, m=$("#f-motivo").value, q=$("#f-busca").value.toLowerCase();
+  return DATA.fila.itens.filter(x=>(!p||x.prioridade===p)&&(!m||x.motivo.includes(m))&&(!q||JSON.stringify(x).toLowerCase().includes(q)));
+}
+function renderFila(){
+  const rows=filaFiltrada();
+  $("#tb-fila").innerHTML=`<tr><th>Prio.</th><th>Por quê</th><th>Ação recomendada</th><th>Conversa</th><th>Canal / marca</th><th>Motivo</th><th class="num">Idade</th><th>Mensagem (mascarada)</th></tr>`+
+   rows.map(x=>`<tr><td><span class="tag ${esc(x.prioridade)}">${esc(x.prioridade)}</span></td><td class="small"><b>${esc(x.motivo)}</b></td><td class="small" style="max-width:280px">${esc(x.acao)}</td>
+   <td class="small"><b>${esc(x.id)}</b><br><span class="muted">${esc(x.pedido)} · ${esc(x.status)} · ${x.contatos} contato(s)</span></td><td class="small">${esc(x.canal)}<br><span class="muted">${esc(x.marca)}</span></td>
+   <td class="small">${esc(x.categoria)}</td><td class="num">${nf1.format(x.idade_dias)}d</td><td class="trecho">${esc(x.trecho)}</td></tr>`).join("");
+}
+function renderAuto(D){
+  const A=D.automacao, eco=D.parametros.economia_automacao;
+  $("#auto-kpis").innerHTML=A.niveis.map(n=>`<div class="card kpi"><div class="lbl"><span class="tag ${n.nivel}">${NIVEL[n.nivel]}</span></div><div class="val">${pct(n.pct)}</div>
+    <div class="foot">${n0(n.conversas_mes)} conversas/mês · ${brl(n.custo_mes)}/mês hoje${n.economia_mes?` · economia ~${brl(n.economia_mes)}/mês (${nf0.format(eco[n.nivel]*100)}%)`:""}</div></div>`).join("");
+  const mh=A.motivos_humano;
+  $("#fila-hint").textContent=`${n0(D.fila.total)} casos (mostrando os ${Math.min(300,D.fila.total)} de maior prioridade) · travas que obrigam humano: `+Object.entries(mh).map(([k,v])=>`${k} (${v})`).join(", ");
+  const sel=$("#f-motivo"), atual=sel.value; sel.innerHTML=`<option value="">Todos os motivos</option>`+Object.keys(D.fila.resumo).map(k=>`<option ${k===atual?"selected":""}>${esc(k)}</option>`).join("");
+  renderFila();
+  $("#tb-automatriz").innerHTML=`<tr><th>Motivo</th><th>Nível</th><th class="num">Conversas</th><th>O que o sistema faz</th></tr>`+A.matriz.filter(m=>m.conversas).sort((a,b)=>b.conversas-a.conversas).map(m=>`<tr><td><b>${esc(m.nome)}</b></td><td><span class="tag ${m.nivel}">${NIVEL[m.nivel]}</span></td><td class="num">${n0(m.conversas)}</td><td class="small">${esc(m.como)}</td></tr>`).join("");
+}
+function renderQual(D){
+  const Q=D.qualidade, M=D.meta;
+  const g=k=>Q.find(q=>q.verificacao.startsWith(k))?.linhas||0;
+  $("#qual-kpis").innerHTML=`<div class="card kpi"><div class="lbl">Linhas recebidas</div><div class="val">${n0(M.linhas_brutas.conversas)}</div><div class="foot">conversas · ${n0(M.linhas_brutas.mensagens)} mensagens · ${n0(M.linhas_brutas.pedidos)} pedidos</div></div>
+   <div class="card kpi"><div class="lbl">Depois da limpeza</div><div class="val">${n0(M.linhas_finais.conversas)}</div><div class="foot">conversas · ${n0(M.linhas_finais.mensagens)} mensagens · ${n0(M.linhas_finais.pedidos)} pedidos</div></div>
+   <div class="card kpi"><div class="lbl">Dados pessoais no texto</div><div class="val">${n0(g("Dados pessoais no texto do cliente (CPF)")+g("Dados pessoais no texto do cliente (número")+g("Dados pessoais no texto do cliente (telefone)")+g("Dados pessoais no texto do cliente (e-mail)"))}</div><div class="foot">CPF, cartão, telefone: mascarados</div></div>
+   <div class="card kpi"><div class="lbl">Tentativas de manipulação</div><div class="val" style="color:var(--red)">${n0(g("Texto tentando"))}</div><div class="foot">ignoradas e enviadas para revisão humana</div></div>`;
+  $("#tb-qual").innerHTML=`<tr><th>Tabela</th><th>Verificação</th><th class="num">Linhas</th><th>O que fizemos</th><th>Tipo</th></tr>`+Q.map(q=>`<tr style="${q.linhas?"":"color:var(--muted)"}"><td class="small">${esc(q.tabela)}</td><td>${esc(q.verificacao)}</td><td class="num"><b>${n0(q.linhas)}</b></td><td class="small">${esc(q.acao)}</td><td><span class="tag">${esc(q.tipo)}</span></td></tr>`).join("");
+}
+
+let PAGE=0; const PER=100;
+function convFiltradas(){
+  const c=$("#c-cat").value, ca=$("#c-canal").value, co=$("#c-conc").value, q=$("#c-busca").value.toLowerCase();
+  return DATA.conversas.filter(x=>(!c||x.categoria===c)&&(!ca||x.canal===ca)&&(!co||String(x.concorda)===co)&&(!q||(x.id+" "+x.pedido+" "+x.trecho+" "+x.marca+" "+x.tag_agente+" "+x.categoria_nome).toLowerCase().includes(q)));
+}
+function renderConvTable(){
+  const rows=convFiltradas(), pages=Math.max(1,Math.ceil(rows.length/PER)); PAGE=Math.min(PAGE,pages-1);
+  const sl=rows.slice(PAGE*PER,(PAGE+1)*PER);
+  $("#tb-conv").innerHTML=`<tr><th>ID</th><th>Data</th><th>Canal</th><th>Marca</th><th>Nossa categoria</th><th>Tag do agente</th><th>Bate?</th><th>SLA</th><th>Política</th><th>Nível</th><th>Mensagem (mascarada)</th></tr>`+
+   sl.map(x=>`<tr><td class="small"><b>${esc(x.id)}</b><br><span class="muted">${esc(x.pedido)}</span></td><td class="small">${esc(x.data)}</td><td class="small">${esc(CANAL[x.canal]||x.canal)}</td><td class="small">${esc(x.marca)}</td>
+   <td class="small"><b>${esc(x.categoria_nome)}</b>${x.secundarias?`<br><span class="muted">+ ${esc(x.secundarias)}</span>`:""}<br><span class="muted">${esc(x.regra)}</span></td><td class="small">${esc(x.tag_agente||"(vazia)")}</td>
+   <td>${x.concorda===null?"–":x.concorda?"sim":"<b style='color:var(--red)'>não</b>"}</td><td class="small">${esc(x.sla)}</td><td>${x.politica!=="n/a"?`<span class="tag ${esc(x.politica)}" title="${esc(x.politica_motivo)}">${esc(x.politica.replace("_"," "))}</span>`:""}</td>
+   <td><span class="tag ${esc(x.automacao)}">${NIVEL[x.automacao]}</span></td><td class="trecho">${esc(x.trecho)}${x.injecao?' <span class="tag P1">injeção</span>':""}${x.ironia?' <span class="tag">ironia</span>':""}</td></tr>`).join("");
+  $("#pager").innerHTML=`<button class="btn ghost" ${PAGE===0?"disabled":""} id="pg-prev">‹</button> página ${PAGE+1} de ${pages} · ${n0(rows.length)} conversas <button class="btn ghost" ${PAGE>=pages-1?"disabled":""} id="pg-next">›</button>`;
+  $("#pg-prev").onclick=()=>{PAGE--;renderConvTable()}; $("#pg-next").onclick=()=>{PAGE++;renderConvTable()};
+}
+function renderConv(D){
+  const sel=$("#c-cat"), atual=sel.value, cats=[...new Map(D.conversas.map(c=>[c.categoria,c.categoria_nome])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
+  sel.innerHTML=`<option value="">Todas as categorias</option>`+cats.map(([k,v])=>`<option value="${esc(k)}" ${k===atual?"selected":""}>${esc(v)}</option>`).join("");
+  PAGE=0; renderConvTable();
+}
+
+function csv(rows,cols,nome){
+  const q=v=>{v=v==null?"":String(v);if(/^[=+\-@]/.test(v))v="'"+v; return /[",;\n]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v};
+  const txt="﻿"+cols.join(",")+"\n"+rows.map(r=>cols.map(c=>q(r[c])).join(",")).join("\n");
+  const a=document.createElement("a"); a.href=URL.createObjectURL(new Blob([txt],{type:"text/csv;charset=utf-8"})); a.download=nome; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+
+const CAMPOS_NEG=[["custo_canal.whatsapp","Custo WhatsApp (R$)"],["custo_canal.email","Custo e-mail (R$)"],["custo_canal.reclame_aqui","Custo Reclame Aqui (R$)"],
+ ["sla_horas.whatsapp","SLA WhatsApp (h, comercial)"],["sla_horas.email","SLA e-mail (h)"],["sla_horas.reclame_aqui","SLA Reclame Aqui (h)"],
+ ["hora_abertura","Abertura (hora)"],["hora_fechamento","Fechamento (hora)"],["fator_amostra","Fator de amostra (1 em N clientes)"],
+ ["pedidos_periodo.Gocase","Pedidos no período: Gocase"],["pedidos_periodo.GoBeauté","Pedidos no período: GoBeauté"],
+ ["custo_conversa_vazia_pct","Custo de conversa vazia (0 a 1)"],["prazo_cosmetovigilancia_horas","Prazo cosmetovigilância (h)"],
+ ["dias_periodo","Dias do período (vazio = automático)"],["data_referencia","Data de referência (AAAA-MM-DD, vazio = automático)"]];
+const NOMES_TAXA={rota_express:"Rota Express no Nordeste",rastreio_proativo:"Rastreio proativo",expedicao:"Conferência na expedição",avaria:"Embalagem / avaria",personalizacao:"Qualidade da personalização",pagamentos:"Conciliação de pagamentos",autoatendimento:"Autoatendimento",fragrancia:"Fragrâncias",primeiro_contato:"Resolver no 1º contato",cosmetovigilancia:"Cosmetovigilância"};
+const getp=(o,k)=>k.split(".").reduce((a,b)=>a==null?a:a[b],o);
+function setp(o,k,v){const ks=k.split(".");let a=o;ks.slice(0,-1).forEach(x=>a=a[x]);a[ks.at(-1)]=v}
+function campo(k,l){const v=getp(PARAMS,k);return `<label class="f">${esc(l)}<input data-k="${esc(k)}" value="${v==null?"":esc(v)}"></label>`}
+function renderForm(){
+  $("#form-negocio").innerHTML=CAMPOS_NEG.map(([k,l])=>campo(k,l)).join("");
+  $("#form-taxas").innerHTML=Object.keys(PARAMS.taxas_iniciativas).map(k=>campo("taxas_iniciativas."+k,NOMES_TAXA[k]||k)).join("");
+  $("#form-auto").innerHTML=["automatico","assistido"].map(k=>campo("economia_automacao."+k,NIVEL[k])).join("");
+}
+function lerForm(){
+  document.querySelectorAll("#t-param input[data-k]").forEach(inp=>{
+    const k=inp.dataset.k, raw=inp.value.trim();
+    if(k==="data_referencia"){setp(PARAMS,k,raw||null);return}
+    if(k==="dias_periodo"){setp(PARAMS,k,raw?Number(raw.replace(",",".")):null);return}
+    const n=Number(raw.replace(",","."));
+    if(raw!==""&&!isNaN(n))setp(PARAMS,k,n);
+  });
+}
+
+async function init(){
+  tabs();
+  ["f-prio","f-motivo"].forEach(id=>$("#"+id).addEventListener("change",renderFila)); $("#f-busca").addEventListener("input",renderFila);
+  ["c-cat","c-canal","c-conc"].forEach(id=>$("#"+id).addEventListener("change",()=>{PAGE=0;renderConvTable()})); $("#c-busca").addEventListener("input",()=>{PAGE=0;renderConvTable()});
+  $("#exp-conv").onclick=()=>csv(convFiltradas(),["id","data","marca","canal","status","pedido","produto","transportadora","uf","status_entrega","categoria","categoria_nome","grupo","secundarias","confianca","regra","tag_agente","concorda","recontato","contatos_no_caso","sla","frt_h","politica","politica_motivo","automacao","motivo_humano","prioridade","custo","injecao","ironia","pii","trecho"],"conversas_classificadas.csv");
+  $("#exp-fila").onclick=()=>csv(filaFiltrada(),["prioridade","motivo","acao","id","pedido","canal","marca","categoria","status","status_entrega","idade_dias","aberta_em","contatos","trecho"],"fila_acao_humana.csv");
+  $("#btn-recalc").onclick=()=>{lerForm();carregar()};
+  $("#btn-reset").onclick=()=>{PARAMS=structuredClone(DEFAULTS);renderForm();carregar()};
+  $("#btn-upload").onclick=()=>{
+    const f={conversas:$("#up-conversas").files[0],mensagens:$("#up-mensagens").files[0],pedidos:$("#up-pedidos").files[0]};
+    if(!f.conversas||!f.mensagens||!f.pedidos){$("#up-status").textContent="Selecione os três arquivos.";return}
+    FILES=f; lerForm(); $("#up-status").textContent=`Usando ${f.conversas.name}, ${f.mensagens.name}, ${f.pedidos.name}. Mudanças de parâmetro reenviam estes arquivos.`; carregar().then(()=>show("exec"));
+  };
+  $("#btn-original").onclick=()=>{FILES=null;["conversas","mensagens","pedidos"].forEach(k=>$("#up-"+k).value="");$("#up-status").textContent="";carregar()};
+  try{DEFAULTS=await (await fetch("/api/parametros")).json();PARAMS=structuredClone(DEFAULTS)}catch(e){erro("Falha ao carregar parâmetros: "+e.message);return}
+  carregar();
+}
+init();
+</script>
+</body>
+</html>
