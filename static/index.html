@@ -123,6 +123,22 @@ input.search{font-size:13.5px;padding:7px 10px;border:1px solid var(--rule);bord
 .two-col-list{columns:2;column-gap:28px;font-size:13.5px}
 @media(max-width:980px){.two-col-list{columns:1}}
 .pager{display:flex;gap:8px;align-items:center;margin-top:10px;font-size:13px}
+.btn.mini{padding:4px 9px;font-size:12px}
+.ag-res{margin-bottom:16px}
+.ag-res header{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:baseline;border-bottom:1px solid var(--rule);padding-bottom:8px;margin-bottom:12px}
+.ag-res header .id{font-family:var(--serif);font-weight:800;font-size:22px}
+.ag-res .alerta{background:var(--red-soft);border-left:4px solid var(--red);padding:8px 12px;font-size:13px;margin:0 0 10px}
+.ag-res .cat{font-size:13.5px;margin:0 0 10px}
+.ag-res textarea{width:100%;min-height:120px;font-family:var(--sans);font-size:14px;line-height:1.5;padding:10px 12px;border:1px solid var(--rule);border-radius:3px;background:#fff;color:var(--ink);resize:vertical}
+.ag-res textarea:focus{outline:2px solid var(--red);outline-offset:-1px}
+.ag-res .lbl2{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:12px 0 4px}
+.ag-res details{font-size:12.5px;color:var(--muted);margin-top:10px}
+.ag-res details code{font-family:var(--mono);font-size:11.5px}
+.tag.pendente_aprovacao{background:var(--ochre-soft);border-color:var(--ochre);color:#6b4a06}
+.tag.bloqueada,.tag.recusada{background:var(--red);color:#fff;border-color:var(--red)}
+.tag.liberada,.tag.aprovada{background:var(--teal-soft);border-color:var(--teal);color:var(--teal)}
+.tag.dinheiro,.tag.saude{border-color:var(--ink);font-weight:600}
+.ag-status .val{font-size:28px}
 footer{border-top:3px double var(--ink);padding:18px 0 40px;font-size:12.5px;color:var(--muted)}
 </style>
 </head>
@@ -221,6 +237,37 @@ footer{border-top:3px double var(--ink);padding:18px 0 40px;font-size:12.5px;col
     <div class="card"><table id="tb-automatriz"></table></div>
   </section>
 
+  <!-- agente -->
+  <section class="tab" id="t-agente">
+    <h2>Agente de IA: trabalha o caso e deixa pronto para revisão</h2>
+    <p class="lede">O agente pega uma conversa da fila, consulta a conversa, o pedido, a política de parametros.md e o histórico do cliente
+      (ferramentas que chamam o mesmo motor do painel) e devolve a categoria confirmada ou corrigida, um rascunho de resposta e as ações propostas.
+      Nada é enviado ao cliente nem executado: as ações são simuladas, as que mexem com dinheiro ou saúde esperam a aprovação de uma pessoa
+      e as decisões ficam registradas só neste navegador.</p>
+    <div class="grid g-7-5">
+      <div class="card">
+        <h3>Rodar em um caso</h3>
+        <div class="toolbar">
+          <select id="ag-fila" style="max-width:420px"></select>
+          <input class="search" id="ag-id" placeholder="ou digite o ID (ex.: CV911656)" maxlength="40">
+          <button class="btn" id="ag-rodar">Rodar agente</button>
+        </div>
+        <h3 style="margin-top:18px">Revisão em lote</h3>
+        <div class="toolbar">
+          <label class="f" style="flex-direction:row;align-items:center;gap:8px">N <input id="ag-n" value="5" inputmode="numeric" style="width:64px"></label>
+          <button class="btn ghost" id="ag-lote">Processar os N primeiros da fila</button>
+          <span class="small muted" id="ag-prog"></span>
+        </div>
+        <p class="small muted" style="margin:0">Em sequência, na ordem de prioridade da fila urgente (máximo 10 por vez). Com dados de upload, os arquivos vão junto em cada chamada.</p>
+      </div>
+      <div class="card ag-status" id="ag-status"><div class="muted small">Verificando o agente…</div></div>
+    </div>
+    <div class="sec-title"><h3>Resultados para revisão</h3><span class="hint"><button class="btn ghost mini" id="ag-limpar">Limpar resultados</button></span></div>
+    <div id="ag-resultados"><p class="muted small">Nenhum caso processado ainda. Escolha um caso acima ou use "Rodar agente" na fila da aba Sistema × pessoa.</p></div>
+    <div class="sec-title"><h3>Registro de decisões</h3><span class="hint">Salvo só neste navegador (localStorage) · <button class="btn ghost mini" id="ag-exp">Exportar CSV</button> <button class="btn ghost mini" id="ag-zerar">Apagar registro</button></span></div>
+    <div class="card scroll" style="max-height:360px"><table id="ag-log"></table></div>
+  </section>
+
   <!-- 6 -->
   <section class="tab" id="t-param">
     <h2>Parâmetros e novos dados</h2>
@@ -280,12 +327,12 @@ footer{border-top:3px double var(--ink);padding:18px 0 40px;font-size:12.5px;col
     <div class="pager" id="pager"></div>
   </section>
 </div></main>
-<footer><div class="wrap">Dados sintéticos do desafio. Classificação 100% por regras, sem envio de texto a serviços externos. Código: analise.py e classificador.py.</div></footer>
+<footer><div class="wrap">Dados sintéticos do desafio. Classificação 100% por regras. Só o agente de IA (opcional) envia texto a um serviço externo, e sempre mascarado. Código: analise.py, classificador.py e agente.py.</div></footer>
 <div id="overlay"><div class="box">Recalculando…</div></div>
 
 <script>
 "use strict";
-const TABS=[["exec","Visão executiva"],["motivos","Motivos"],["tags","Classificação × tag"],["atacar","O que atacar"],["auto","Sistema × pessoa"],["param","Parâmetros e upload"],["qual","Qualidade dos dados"],["conv","Conversas"]];
+const TABS=[["exec","Visão executiva"],["motivos","Motivos"],["tags","Classificação × tag"],["atacar","O que atacar"],["auto","Sistema × pessoa"],["agente","Agente de IA"],["param","Parâmetros e upload"],["qual","Qualidade dos dados"],["conv","Conversas"]];
 const $=s=>document.querySelector(s);
 const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nf0=new Intl.NumberFormat("pt-BR",{maximumFractionDigits:0}), nf1=new Intl.NumberFormat("pt-BR",{maximumFractionDigits:1,minimumFractionDigits:1});
@@ -430,10 +477,11 @@ function filaFiltrada(){
 }
 function renderFila(){
   const rows=filaFiltrada();
-  $("#tb-fila").innerHTML=`<tr><th>Prio.</th><th>Por quê</th><th>Ação recomendada</th><th>Conversa</th><th>Canal / marca</th><th>Motivo</th><th class="num">Idade</th><th>Mensagem (mascarada)</th></tr>`+
+  $("#tb-fila").innerHTML=`<tr><th>Prio.</th><th>Por quê</th><th>Ação recomendada</th><th>Conversa</th><th>Canal / marca</th><th>Motivo</th><th class="num">Idade</th><th>Mensagem (mascarada)</th><th>Agente</th></tr>`+
    rows.map(x=>`<tr><td><span class="tag ${esc(x.prioridade)}">${esc(x.prioridade)}</span></td><td class="small"><b>${esc(x.motivo)}</b></td><td class="small" style="max-width:280px">${esc(x.acao)}</td>
    <td class="small"><b>${esc(x.id)}</b><br><span class="muted">${esc(x.pedido)} · ${esc(x.status)} · ${x.contatos} contato(s)</span></td><td class="small">${esc(x.canal)}<br><span class="muted">${esc(x.marca)}</span></td>
-   <td class="small">${esc(x.categoria)}</td><td class="num">${nf1.format(x.idade_dias)}d</td><td class="trecho">${esc(x.trecho)}</td></tr>`).join("");
+   <td class="small">${esc(x.categoria)}</td><td class="num">${nf1.format(x.idade_dias)}d</td><td class="trecho">${esc(x.trecho)}</td>
+   <td><button class="btn ghost mini" data-ag="${esc(x.id)}" ${AG.ligado?"":"disabled title='Agente desligado'"}>Rodar agente</button></td></tr>`).join("");
 }
 function renderAuto(D){
   const A=D.automacao, eco=D.parametros.economia_automacao;
@@ -442,7 +490,7 @@ function renderAuto(D){
   const mh=A.motivos_humano;
   $("#fila-hint").textContent=`${n0(D.fila.total)} casos (mostrando os ${Math.min(300,D.fila.total)} de maior prioridade) · travas que obrigam humano: `+Object.entries(mh).map(([k,v])=>`${k} (${v})`).join(", ");
   const sel=$("#f-motivo"), atual=sel.value; sel.innerHTML=`<option value="">Todos os motivos</option>`+Object.keys(D.fila.resumo).map(k=>`<option ${k===atual?"selected":""}>${esc(k)}</option>`).join("");
-  renderFila();
+  renderFila(); renderAgenteFila();
   $("#tb-automatriz").innerHTML=`<tr><th>Motivo</th><th>Nível</th><th class="num">Conversas</th><th>O que o sistema faz</th></tr>`+A.matriz.filter(m=>m.conversas).sort((a,b)=>b.conversas-a.conversas).map(m=>`<tr><td><b>${esc(m.nome)}</b></td><td><span class="tag ${m.nivel}">${NIVEL[m.nivel]}</span></td><td class="num">${n0(m.conversas)}</td><td class="small">${esc(m.como)}</td></tr>`).join("");
 }
 function renderQual(D){
@@ -508,8 +556,102 @@ function lerForm(){
   });
 }
 
+// ---------------------------------------------------------------- agente de IA
+const AG={ligado:false,status:null,resultados:[],ocupado:false};
+const RISCO={dinheiro:"dinheiro",saude:"saúde",operacional:"operacional"};
+const ST_ACAO={pendente_aprovacao:"pendente de aprovação",liberada:"liberada (simulada)",bloqueada:"bloqueada",aprovada:"aprovada (simulada)",recusada:"recusada"};
+const LOG_KEY="agente_decisoes_v1";
+const lerLog=()=>{try{return JSON.parse(localStorage.getItem(LOG_KEY)||"[]")}catch(_){return []}};
+function registrar(item){const l=lerLog();l.unshift(item);localStorage.setItem(LOG_KEY,JSON.stringify(l.slice(0,500)));renderLog()}
+function renderLog(){
+  const l=lerLog();
+  $("#ag-log").innerHTML=`<tr><th>Quando</th><th>Conversa</th><th>Ação</th><th>Risco</th><th>Decisão</th></tr>`+(l.length?l.map(x=>`<tr><td class="small">${esc(x.quando)}</td><td class="small"><b>${esc(x.conversa)}</b></td><td class="small">${esc(x.nome)}</td><td><span class="tag ${esc(x.risco)}">${esc(RISCO[x.risco]||x.risco)}</span></td><td><span class="tag ${esc(x.decisao)}">${esc(ST_ACAO[x.decisao]||x.decisao)}</span></td></tr>`).join(""):`<tr><td colspan="5" class="muted small">Nenhuma decisão registrada.</td></tr>`);
+}
+async function carregarStatusAgente(){
+  try{AG.status=await (await fetch("/api/agente/status")).json();AG.ligado=!!AG.status.ligado}catch(e){AG.status={ligado:false,motivo:"Não foi possível consultar o servidor."};AG.ligado=false}
+  const S=AG.status,L=S.limites||{};
+  $("#ag-status").innerHTML=`<div class="kpi"><div class="lbl">Situação do agente</div><div class="val" style="color:${S.ligado?"var(--teal)":"var(--red)"}">${S.ligado?"Ligado":"Desligado"}</div>
+    <div class="foot">${S.ligado?`modelo <b>${esc(S.modelo)}</b> via gateway compatível com a API da OpenAI`:esc(S.motivo||"")+" O restante do painel funciona normalmente."}</div></div>
+    <div class="small" style="margin-top:10px"><b>Limites:</b> ${n0(L.passos)} passos por caso · ${n0(L.max_tokens)} tokens por resposta · ${n0(L.timeout_s)} s por chamada · ${n0(L.prazo_total_s)} s por caso · ${n0(L.chamadas_por_minuto_por_ip)} casos por minuto por IP</div>
+    <div class="small" style="margin-top:6px"><b>Segurança:</b> CPF, cartão, telefone e e-mail mascarados antes de ir para a IA; texto do cliente delimitado e tratado como dado; trecho que tenta dar ordens ao sistema é cortado e o caso, sinalizado; dinheiro e saúde sempre pendentes de aprovação humana.</div>`;
+  ["#ag-rodar","#ag-lote"].forEach(s=>$(s).disabled=!AG.ligado);
+  if(DATA)renderFila();
+}
+function renderAgenteFila(){
+  const sel=$("#ag-fila"), atual=sel.value, it=(DATA?.fila?.itens||[]).slice(0,60);
+  sel.innerHTML=`<option value="">Escolha um caso da fila urgente…</option>`+it.map(x=>`<option value="${esc(x.id)}" ${x.id===atual?"selected":""}>${esc(x.prioridade)} · ${esc(x.id)} · ${esc(x.motivo)} · ${esc(x.categoria)}</option>`).join("");
+}
+async function chamarAgente(id){
+  const fd=new FormData(); fd.append("conversation_id",id);
+  if(FILES){fd.append("conversas",FILES.conversas);fd.append("mensagens",FILES.mensagens);fd.append("pedidos",FILES.pedidos)}
+  let r; try{r=await fetch("/api/agente",{method:"POST",body:fd})}catch(e){throw new Error("sem conexão com o servidor")}
+  let j=null; try{j=await r.json()}catch(_){}
+  if(!r.ok){
+    if(r.status===504)throw new Error("o agente passou do tempo limite do servidor; tente de novo");
+    throw new Error((j&&j.detail)||("erro "+r.status));
+  }
+  if(!j)throw new Error("resposta inválida do servidor");
+  return j;
+}
+function cardResultado(R,k){
+  if(R.erro)return `<div class="card ag-res"><header><span class="id">${esc(R.conversation_id)}</span><span class="tag P1">erro</span></header><div class="alerta">${esc(R.erro)}</div></div>`;
+  const C=R.categoria;
+  const cat=C.confirmada?`<b>Categoria confirmada:</b> ${esc(C.nome)}`:`<b>Categoria corrigida:</b> o classificador dizia <i>${esc(C.classificador.nome)}</i> → <b>${esc(C.nome)}</b>`;
+  const acoes=R.acoes.length?`<table><tr><th>Ação</th><th>Risco</th><th>Situação</th><th>Por quê</th><th></th></tr>${R.acoes.map((a,i)=>`<tr>
+     <td class="small"><b>${esc(a.nome)}</b>${a.origem==="regra"?' <span class="tag" title="incluída por regra do código, não pela IA">regra</span>':""}</td><td><span class="tag ${esc(a.risco)}">${esc(RISCO[a.risco]||a.risco)}</span></td>
+     <td><span class="tag ${esc(a.status)}">${esc(ST_ACAO[a.status]||a.status)}</span></td><td class="small">${esc(a.justificativa)}${a.aviso?`<br><b style="color:var(--red)">${esc(a.aviso)}</b>`:""}</td>
+     <td style="white-space:nowrap">${a.status==="pendente_aprovacao"?`<button class="btn mini" data-dec="aprovada" data-k="${k}" data-i="${i}">Aprovar</button> <button class="btn ghost mini" data-dec="recusada" data-k="${k}" data-i="${i}">Recusar</button>`:""}</td></tr>`).join("")}</table>`:`<p class="small muted">Nenhuma ação proposta.</p>`;
+  const passos=R.passos.map(p=>`<code>${p.passo}. ${esc(p.ferramenta)}${p.argumentos&&Object.keys(p.argumentos).length?" "+esc(JSON.stringify(p.argumentos)):""}${p.ok===false?" (recusada)":""}</code>`).join(" · ");
+  return `<div class="card ag-res"><header><span class="id">${esc(R.conversation_id)}</span>
+     <span class="small muted">${esc(R.canal)} · ${esc(R.marca)}${R.pedido?" · pedido "+esc(R.pedido):""}</span>
+     ${R.sinalizado_injecao?'<span class="tag P1">tentativa de instrução</span>':""}
+     <span class="small muted" style="margin-left:auto">${esc(R.modelo)} · ${nf1.format(R.duracao_s)} s · ${n0(R.uso.chamadas)} chamadas à IA</span></header>
+    ${R.alertas.map(a=>`<div class="alerta">${esc(a)}</div>`).join("")}
+    <p class="cat">${cat}<br><span class="muted">${esc(C.motivo)}</span></p>
+    <div class="lbl2">Rascunho de resposta ao cliente (edite antes de enviar)</div>
+    <textarea data-rasc="${k}">${esc(R.rascunho)}</textarea>
+    <div class="toolbar" style="margin:6px 0 0"><button class="btn ghost mini" data-copiar="${k}">Copiar rascunho</button></div>
+    <div class="lbl2">Ações propostas (simuladas)</div>${acoes}
+    ${R.observacao?`<div class="lbl2">Para o revisor</div><div class="small">${esc(R.observacao)}</div>`:""}
+    <details><summary>Passos do agente (${R.passos.length})</summary><div style="margin-top:6px">${passos}</div></details></div>`;
+}
+function renderResultados(){
+  $("#ag-resultados").innerHTML=AG.resultados.length?AG.resultados.map(cardResultado).join(""):`<p class="muted small">Nenhum caso processado ainda.</p>`;
+}
+async function rodarCasos(ids){
+  if(AG.ocupado||!AG.ligado)return;
+  AG.ocupado=true; ["#ag-rodar","#ag-lote"].forEach(s=>$(s).disabled=true);
+  try{
+    for(let i=0;i<ids.length;i++){
+      $("#ag-prog").textContent=`Processando ${i+1} de ${ids.length}: ${ids[i]}…`;
+      let R; try{R=await chamarAgente(ids[i])}catch(e){R={conversation_id:ids[i],erro:"Não foi possível rodar o agente: "+e.message}}
+      AG.resultados.unshift(R); renderResultados();
+    }
+    $("#ag-prog").textContent=`Pronto: ${ids.length} caso(s) para revisar.`;
+  }finally{AG.ocupado=false;["#ag-rodar","#ag-lote"].forEach(s=>$(s).disabled=!AG.ligado)}
+}
+function initAgente(){
+  $("#ag-rodar").onclick=()=>{const id=($("#ag-id").value.trim()||$("#ag-fila").value);if(!id){$("#ag-prog").textContent="Escolha um caso ou digite um ID.";return}
+    if(!/^[A-Za-z0-9_-]{1,40}$/.test(id)){$("#ag-prog").textContent="ID inválido.";return} rodarCasos([id])};
+  $("#ag-lote").onclick=()=>{let n=parseInt($("#ag-n").value,10);if(!(n>=1))n=5;n=Math.min(n,10);$("#ag-n").value=n;
+    const ids=(DATA?.fila?.itens||[]).slice(0,n).map(x=>x.id); if(ids.length)rodarCasos(ids)};
+  $("#ag-limpar").onclick=()=>{AG.resultados=[];renderResultados()};
+  $("#ag-zerar").onclick=()=>{if(confirm("Apagar o registro de decisões deste navegador?")){localStorage.removeItem(LOG_KEY);renderLog()}};
+  $("#ag-exp").onclick=()=>csv(lerLog(),["quando","conversa","acao","nome","risco","decisao","justificativa"],"decisoes_agente.csv");
+  $("#ag-resultados").addEventListener("click",e=>{
+    const b=e.target.closest("button"); if(!b)return;
+    if(b.dataset.copiar!=null){const t=document.querySelector(`textarea[data-rasc="${b.dataset.copiar}"]`);navigator.clipboard?.writeText(t.value).then(()=>{b.textContent="Copiado"});return}
+    if(b.dataset.dec){const R=AG.resultados[+b.dataset.k],a=R.acoes[+b.dataset.i];a.status=b.dataset.dec;
+      registrar({quando:new Date().toLocaleString("pt-BR"),conversa:R.conversation_id,acao:a.acao,nome:a.nome,risco:a.risco,decisao:a.status,justificativa:a.justificativa});
+      renderResultados()}
+  });
+  $("#ag-resultados").addEventListener("input",e=>{const t=e.target.closest("textarea[data-rasc]");if(t)AG.resultados[+t.dataset.rasc].rascunho=t.value});
+  $("#tb-fila").addEventListener("click",e=>{const b=e.target.closest("button[data-ag]");if(!b||!AG.ligado)return;show("agente");window.scrollTo(0,0);rodarCasos([b.dataset.ag])});
+  renderLog(); carregarStatusAgente();
+}
+
 async function init(){
-  tabs();
+  tabs(); initAgente();
   ["f-prio","f-motivo"].forEach(id=>$("#"+id).addEventListener("change",renderFila)); $("#f-busca").addEventListener("input",renderFila);
   ["c-cat","c-canal","c-conc"].forEach(id=>$("#"+id).addEventListener("change",()=>{PAGE=0;renderConvTable()})); $("#c-busca").addEventListener("input",()=>{PAGE=0;renderConvTable()});
   $("#exp-conv").onclick=()=>csv(convFiltradas(),["id","data","marca","canal","status","pedido","produto","transportadora","uf","status_entrega","categoria","categoria_nome","grupo","secundarias","confianca","regra","tag_agente","concorda","recontato","contatos_no_caso","sla","frt_h","politica","politica_motivo","automacao","motivo_humano","prioridade","custo","injecao","ironia","pii","trecho"],"conversas_classificadas.csv");

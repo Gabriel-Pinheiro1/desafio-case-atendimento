@@ -2,7 +2,7 @@
 
 **Problema.** ~4.000 conversas/mês em WhatsApp, e-mail e Reclame Aqui, categorizadas à mão. A liderança não sabe
 por que os clientes procuram nem o que fazer. Construí um app que classifica cada conversa pelo texto (regras, sem IA
-externa), põe peso em R$ por motivo, confere as políticas e prioriza ações. Recalcula com novos CSVs e parâmetros.
+externa), põe peso em R$ por motivo, confere as políticas e prioriza ações; um agente de IA prepara cada caso da fila. Recalcula com novos CSVs e parâmetros.
 
 **Números (extrapolados da amostra 1:3, por mês)**
 
@@ -39,9 +39,16 @@ reduz 50% dos contatos, não os ~70% que levariam ao nível das outras).
 **Caso a caso (hoje).** Fila de 554 casos: 104 P1 (40 de saúde, 6 com texto tentando manipular o sistema, 58 cobranças
 indevidas em aberto), depois Reclame Aqui, endereço ainda alterável e clientes no 3º contato.
 
+**Agente de IA.** Pega um caso da fila (ou os N primeiros, em lote), consulta conversa, pedido, política e histórico
+do cliente com ferramentas que chamam o motor do painel, e devolve a categoria conferida, um rascunho de resposta no tom
+da marca e ações de uma lista fechada. Dinheiro e saúde ficam pendentes de aprovação humana; num caso com texto tentando
+dar ordens ao sistema, ações com dinheiro ficam bloqueadas. Dados pessoais vão mascarados. Testado ao vivo em reação
+adversa, cobrança duplicada e injeção (~20 s e 3 chamadas à IA por caso).
+
 **Sistema × pessoa.** 44% automatizável (rastreio, dúvidas, cupom, pagamento, endereço), 41% assistido (sistema coleta
 foto/checa regra, humano aprova), 15% humano obrigatório (saúde, cobrança, Reclame Aqui, manipulação).
 
 **Limites.** Regras cobrem os padrões desta base; pedidos.csv só tem quem procurou (índices de concentração, não taxas);
 sem data de recebimento, os prazos de 7/30 dias não são verificáveis; ganhos são de custo de atendimento, sem reenvio,
 estorno ou churn. Dados pessoais mascarados; texto do cliente tratado como não confiável.
+O limite de chamadas do agente por IP é em memória, por instância; aprovações são simuladas e ficam no navegador.
