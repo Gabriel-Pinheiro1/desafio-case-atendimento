@@ -373,7 +373,7 @@ function renderMotivos(D){
   const S=D.semanas, foco=new Set((D.concentracoes.mudancas||[]).slice(0,5).map(m=>m.categoria));
   const cats=Object.keys(S.series).filter(c=>c!=="sem_mensagem").sort((a,b)=>S.series[b].reduce((x,y)=>x+y,0)-S.series[a].reduce((x,y)=>x+y,0));
   chart("ch-semanas",{type:"line",data:{labels:S.rotulos,datasets:cats.map((c,i)=>({label:S.nomes[c],data:S.series[c],borderColor:PAL[i%PAL.length],backgroundColor:PAL[i%PAL.length],tension:.25,borderWidth:foco.has(c)?3:1.2,pointRadius:foco.has(c)?2.5:0,hidden:!(foco.has(c)||i<2)}))},
-    options:{maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11}}}},scales:{x:{title:{display:true,text:"semana iniciada em"}}}}});
+    options:{maintainAspectRatio:false,interaction:{mode:"index",intersect:false},plugins:{legend:{position:"right",labels:{boxWidth:12,font:{size:11}}}},scales:{x:{title:{display:true,text:"semana iniciada em (* = semana incompleta no período)"}}}}});
   const mu=(D.concentracoes.mudancas||[]).filter(m=>Math.abs(m.variacao||0)>=40).slice(0,6);
   $("#mudancas").innerHTML=mu.length?"<b>Maiores mudanças</b> (média das 4 primeiras vs. 4 últimas semanas completas): "+mu.map(m=>`${esc(m.nome)} ${m.antes}→${m.depois}/sem (${m.variacao>0?"+":""}${nf0.format(m.variacao)}%${m.desde?", desde "+esc(m.desde):""})`).join(" · "):"";
   const T=D.concentracoes.transportadoras;

@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 
 from classificador import (
-    CATEGORIAS, TAGS_OFICIAIS, classificar_conversa, detectar_pii, mascarar, normalizar, sem_acento,
+    CATEGORIAS, TAGS_OFICIAIS, classificar_conversa, detectar_pii, mascarar, normalizar, redigir_injecao, sem_acento,
 )
 
 BASE = Path(__file__).resolve().parent
@@ -567,7 +567,7 @@ def analisar(conv_src=None, msgs_src=None, peds_src=None, params: dict | None = 
             t_cliente=t_cli, t_agente=t_age, frt_h=frt if t_age is not None else None, sla=sla, acoes=acoes,
             promessa_h=int(prom.group(1)) if prom else None, ultimo_autor=e["ultimo"],
             politica=sit, politica_motivo=expl,
-            trecho=mascarar(textos_cli[0])[:220] if textos_cli else "",
+            trecho=redigir_injecao(mascarar(textos_cli[0]))[:240] if textos_cli else "",
         ))
     d = pd.concat([d.reset_index(drop=True), pd.DataFrame(linhas)], axis=1)
 
@@ -758,13 +758,15 @@ def montar_resposta(d, peds, log, brutos, finais, P, data_ref, dias, fator, fato
     # semana a semana
     d["semana"] = d.dt_abertura.dt.to_period("W-SUN").dt.start_time
     semanas = sorted(d.semana.unique())
-    sem_lbl = [pd.Timestamp(s).strftime("%d/%m") for s in semanas]
+    ini_p, fim_p = d.dt_abertura.min().normalize(), d.dt_abertura.max().normalize()
+    sem_lbl = [pd.Timestamp(s).strftime("%d/%m") + ("*" if (pd.Timestamp(s) < ini_p or pd.Timestamp(s) + pd.Timedelta(days=6) > fim_p) else "")
+               for s in semanas]
     serie = {}
     for cat, g in d.groupby("categoria"):
         vc = g.semana.value_counts()
         serie[cat] = [int(vc.get(s, 0)) for s in semanas]
     # detecção de mudança: média das últimas 4 semanas completas vs das 4 primeiras
-    completas = [i for i, s in enumerate(semanas) if (d.semana == s).sum() >= 0.5 * (n / max(len(semanas), 1))]
+    completas = [i for i, lbl in enumerate(sem_lbl) if not lbl.endswith("*")]
     mudancas = []
     if len(completas) >= 6:
         ini, fim = completas[:4], completas[-4:]
@@ -784,7 +786,7 @@ def montar_resposta(d, peds, log, brutos, finais, P, data_ref, dias, fator, fato
         base = max(np.median(v[1:5]), 1)
         for i in range(4, len(v)):
             if v[i] >= 2 * base and (i + 1 < len(v) and v[i + 1] >= 2 * base):
-                return sem_lbl[i]
+                return sem_lbl[i].rstrip("*")
         return None
     for m in mudancas:
         m["desde"] = inicio_salto(m["categoria"])

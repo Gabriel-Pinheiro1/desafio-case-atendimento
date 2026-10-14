@@ -1,0 +1,6 @@
+{
+  "builds": [
+    { "src": "app.py", "use": "@vercel/python", "config": { "includeFiles": ["dados/**", "static/**", "analise.py", "classificador.py"] } }
+  ],
+  "routes": [{ "src": "/(.*)", "dest": "app.py" }]
+}

@@ -1,0 +1,7 @@
+.venv/
+tests/
+lote_teste/
+gerar_lote_teste.py
+__pycache__/
+.pytest_cache/
+*.pdf

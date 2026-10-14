@@ -121,6 +121,15 @@ RE_INJECAO = re.compile(
 )
 
 
+def redigir_injecao(texto: str) -> str:
+    """Para exibir a um humano: corta o trecho que tenta dar ordens ao sistema."""
+    if not isinstance(texto, str):
+        return ""
+    alinhado = "".join(sem_acento(ch) or ch for ch in texto).lower()  # mesmo comprimento do original
+    m = RE_INJECAO.search(alinhado)
+    return texto if not m else texto[:m.start()].rstrip() + " [trecho removido: tentativa de instrução ao sistema]"
+
+
 def detectar_injecao(texto_norm: str) -> int:
     """Retorna a posição onde começa a tentativa de manipulação, ou -1."""
     m = RE_INJECAO.search(texto_norm)
